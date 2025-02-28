@@ -7,3 +7,5 @@ To ensure compatibility with the project a virtual enviroment with the neccessar
 - ```pip install django==3.2.9```
 - ```pip install pillow```
 - ```pip install daphne```
+
+Test
