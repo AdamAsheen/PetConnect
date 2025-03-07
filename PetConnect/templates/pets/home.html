@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - PetConnect{% endblock %}
+
+{% block content %}
+<h1>Welcome to PetConnect</h1>
+<ul>
+    {% for pet in pets %}
+    <li>{{ pet.name }} - {{ pet.species }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
