@@ -10,7 +10,7 @@ class SignUpView(CreateView):
 
 def chatPage(request, *args, **kwargs):
     if not request.user.is_authenticated:
-        return redirect("login-user")
+        return redirect("login")
     context = {}
     return render(request, "chat/chatPage.html", context)
 
