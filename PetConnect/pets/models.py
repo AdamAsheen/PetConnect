@@ -1,12 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
-    username = models.CharField(max_length=30, unique=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
-    pet_name = models.CharField(max_length=30)
-    profile_pic = models.ImageField(upload_to='profile_pics/', max_length=100, blank=True, null=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='profile')
+    pet_name = models.CharField(max_length=30, default='No Pet')
+    profile_pic = models.ImageField(upload_to='profile_pics/',blank=True,null=True)
     
     def __str__(self):
         return self.username
