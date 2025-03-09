@@ -1,12 +1,27 @@
-{% extends 'base.html' %}
+{% extends 'pets/base.html' %}
 
 {% block title %}Home - PetConnect{% endblock %}
 
 {% block content %}
-<h1>Welcome to PetConnect</h1>
-<ul>
-    {% for pet in pets %}
-    <li>{{ pet.name }} - {{ pet.species }}</li>
-    {% endfor %}
-</ul>
+<div class="container mt-4">
+    <h1>Welcome to PetConnect!</h1>
+    <p>Find and connect with pets and their owners everywhere!.</p>
+
+    <h2>Latest Pets</h2>
+    <div class="list-group">
+        {% for pet in pets %}
+            <div class="list-group-item">
+                <a href="{% url 'pets:detail' pet.id %}">{{ pet.name }} - {{ pet.breed }}</a>
+                <button class="btn btn-sm btn-outline-primary like-button" data-pet-id="{{ pet.id }}">Like</button>
+                <span id="like-count-{{ pet.id }}">{{ pet.likes.count }}</span> likes
+            </div>
+        {% empty %}
+            <p class="text-muted">No pets available at the moment.</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

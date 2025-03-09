@@ -83,8 +83,10 @@ class Pet(models.Model):
     breed = models.CharField(max_length=100)  
     age = models.IntegerField()  
     description = models.TextField()  
-    image = models.ImageField(upload_to='pet_images/', blank=True, null=True)  
+    image = models.ImageField(upload_to='pet_images/', blank=True, null=True) 
+    likes = models.ManyToManyField('auth.User', related_name='liked_pets', blank=True) 
     date_added = models.DateTimeField(auto_now_add=True) 
+    
 
     def __str__(self):
         return self.name 
