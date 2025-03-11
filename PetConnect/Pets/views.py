@@ -4,10 +4,13 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .models import Pet
+from .models import Category
+from .models import Post
 
 
 def home(request):
-    pets = Pet.objects.all() 
+    pets = Pet.objects.all().order_by('-id')[:10] 
+    posts = Post.objects.all().order_by('-date_created')[:10] 
     return render(request, 'pets/home.html', {'pets': pets})
 
 def about(request):
@@ -16,6 +19,16 @@ def about(request):
 
 def contact(request):
     return render(request, 'pets/contact.html')
+
+def profile(request):
+    return render(request, 'pets/profile.html')
+
+def categories(request):
+    categories = Category.objects.all()  
+    return render(request, 'pets/categories.html', {'categories': categories})
+
+def chat(request):
+    return render(request, 'pets/chat.html')
 
 
 def login_view(request):
@@ -33,13 +46,14 @@ def login_view(request):
     return render(request, 'pets/login.html', {'form': form})
 
 
-def pet_detail(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)  
-    return render(request, 'pets/pet_detail.html', {'pet': pet})
+
+def post_detail(request, pk):
+    post = Post.objects.get(id=pk)
+    return render(request, 'pets/post_detail.html', {'post': post})
 
 
 @require_POST
-def like_pet(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)
-    pet.likes.add(request.user)  
-    return JsonResponse({'likes': pet.likes.count()})  
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    post.likes.add(request.user)  
+    return JsonResponse({'likes': post.likes.count()})

@@ -1,0 +1,38 @@
+{% extends 'pets/base.html' %}
+
+{% block title %}{{ post.caption|truncatechars:50 }} - PetConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Post Details</h1>
+    <div class="card">
+        <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.caption }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.caption }}</h5>
+            <p class="card-text">Posted by {{ post.user.username }} on {{ post.date_created }}</p>
+            <p class="card-text">Category: {{ post.category.category_name }}</p>
+            <button class="btn btn-sm btn-outline-primary like-button" data-post-id="{{ post.id }}">Like</button>
+            <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes
+        </div>
+    </div>
+
+    <h3 class="mt-4">Comments</h3>
+    <div class="list-group">
+        {% for comment in post.comments.all %}
+            <div class="list-group-item">
+                <p>{{ comment.comment_text }}</p>
+                <small>Commented by {{ comment.user.username }} on {{ comment.date_created }}</small>
+            </div>
+        {% empty %}
+            <p class="text-muted">No comments yet.</p>
+        {% endfor %}
+    </div>
+
+    <h3 class="mt-4">Add a Comment</h3>
+    <form method="post" action="{% url 'pets:add_comment' post.id %}">
+        {% csrf_token %}
+        <textarea name="comment_text" class="form-control" rows="3" placeholder="Write your comment here..."></textarea>
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+    </form>
+</div>
+{% endblock %}
