@@ -15,6 +15,9 @@ class Category(models.Model):
     category_name = models.CharField(max_length=50, unique=True)
     picture = models.ImageField(upload_to='category_pics/', max_length=200, blank=True, null=True)
     category_description = models.CharField(max_length=300)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
     
     def __str__(self):
         return self.category_name
@@ -58,15 +61,15 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.follower.username} follows {self.followed.username}"
 
-class Help(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='help_questions')
+class Forum(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='forum_questions')
     date_created = models.DateTimeField(auto_now_add=True)
     question = models.CharField(max_length=500)
     answer = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='help_images/', max_length=200, blank=True, null=True)
+    image = models.ImageField(upload_to='forum_images/', max_length=200, blank=True, null=True)
     
     def __str__(self):
-        return f"Help by {self.user.username}: {self.question[:50]}..."
+        return f"Forum by {self.user.username}: {self.question[:50]}..."
 
 class FavoriteCategory(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='favorite_categories')
