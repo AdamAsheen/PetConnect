@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='profile')
@@ -13,17 +14,40 @@ class Category(models.Model):
     category_name = models.CharField(max_length=50, unique=True)
     picture = models.ImageField(upload_to='category_pics/', max_length=200, blank=True, null=True)
     category_description = models.CharField(max_length=300)
+    slug = models.SlugField(max_length = 50, null = True, blank = True, unique = True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
     
+    class Meta:
+        verbose_name_plural = 'categories'
+
     def __str__(self):
         return self.category_name
+        
 
 class Post(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length = 250)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     image = models.ImageField(upload_to='post_images/', max_length=200)
     caption = models.CharField(max_length=300, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    
+    slug = models.SlugField(max_length = 250, null = True, blank = True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+
+        if Category.objects.filter(slug=self.slug).exists():
+            count = 1
+            original_slug = self.slug
+            while Category.objects.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{count}"
+                count += 1
+
+        super(Category, self).save(*args, **kwargs)
+
     def __str__(self):
         return f"Post by {self.user.username} on {self.date_created}"
 
