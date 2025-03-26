@@ -8,6 +8,7 @@ class UserProfile(models.Model):
     pet_name = models.CharField(max_length=30)
     profile_pic = models.ImageField(upload_to='profile_pics/', max_length=100, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
+    bio = models.CharField(max_length=280, blank=True, null=True)
     
     def __str__(self):
         return self.username

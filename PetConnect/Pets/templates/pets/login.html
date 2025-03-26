@@ -9,4 +9,8 @@
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
+<div class="mt-4 text-center">
+    <p>Not a member?</p>
+    <a href="{% url 'pets:signup' %}" class="btn btn-secondary">Sign Up</a>
+</div>
 {% endblock %}
