@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.contrib import admin
 from pets.models import *
 
-# Allows editing of comments and likes inside the post page
 class CommentInline(admin.TabularInline):
     model = Comment
     extra = 1
@@ -11,6 +10,15 @@ class CommentInline(admin.TabularInline):
 class LikeInline(admin.TabularInline):
     model = Like
     extra = 1
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('category_name', 'slug', 'category_description')
+    search_fields = ('category_name', 'category_description')
+    prepopulated_fields = {'slug': ('category_name')}
+    readonly_fields = ('slug',)  
+    list_per_page = 20
+
+
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id','user', 'category', 'caption', 'date_created')
@@ -29,6 +37,7 @@ class PostAdmin(admin.ModelAdmin):
         self.message_user(request, "Selected posts have been approved.")
 
     approve_posts.short_description = "Approve selected posts"
+
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('user', 'post', 'comment_text', 'date_created')

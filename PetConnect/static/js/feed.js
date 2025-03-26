@@ -1,6 +1,32 @@
 let heartButtons = document.querySelectorAll(".heart-button");
 let commentButtons = document.querySelectorAll(".comment-button");
 
+document.getElementById('create-post-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let form = new FormData(this);
+    let csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch("/pets/create-post", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrfToken 
+        },
+        body: form,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload(); 
+        } else {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Failed to create post");
+    });
+});
+
 commentButtons.forEach((button) => {
   button.addEventListener("click",saveComment)
 });
@@ -70,7 +96,7 @@ function likeIncrement() {
       "post-id": postId,
     }),
   })
-    .then((response) => response.json()) // Make sure to parse the response as JSON
+    .then((response) => response.json())
     .then((data) => {
       if (data.success) {
         console.log("New Like Count: ", data.new_like_count);
@@ -78,7 +104,6 @@ function likeIncrement() {
         let likeCountSpan = document.querySelector(`#like-count-${postId}`);
         likeCountSpan.textContent = `${data.new_like_count}`;
 
-        // Update the heart icon to solid (liked)
         this.innerHTML = `<i class="fas fa-heart"></i>`;
       }
     })
@@ -101,7 +126,7 @@ function likeDecrement() {
       "post-id": postId,
     }),
   })
-    .then((response) => response.json()) // Parse the response as JSON
+    .then((response) => response.json()) 
     .then((data) => {
       if (data.success) {
         console.log("New Like Count: ", data.new_like_count);
@@ -109,7 +134,6 @@ function likeDecrement() {
         let likeCountSpan = document.querySelector(`#like-count-${postId}`);
         likeCountSpan.textContent = `${data.new_like_count}`;
 
-        // Update the heart icon to outline (unliked)
         this.innerHTML = `<i class="far fa-heart"></i>`;
       }
     })

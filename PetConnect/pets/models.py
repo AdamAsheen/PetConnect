@@ -17,7 +17,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length = 50, null = True, blank = True, unique = True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.category_name)
         super(Category, self).save(*args, **kwargs)
     
     class Meta:
@@ -30,8 +30,8 @@ class Category(models.Model):
 class Post(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length = 250)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
-    image = models.ImageField(upload_to='post_images/', max_length=200)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts',default=Category.objects.get_or_create(category_name="General")[0])
+    image = models.ImageField(upload_to='post_images/', max_length=200,blank=True,null=True)
     caption = models.CharField(max_length=300, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length = 250, null = True, blank = True)

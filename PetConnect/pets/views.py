@@ -9,12 +9,14 @@ def general_feed(request):
     user = request.user
     user_profile = UserProfile.objects.get(user=user)
     posts = Post.objects.all().order_by('-date_created')[:10]
+    categories = Category.objects.all()
 
     liked_posts = Like.objects.filter(user=user_profile, post__in=posts).values_list('post_id', flat=True)
     context_dict["liked_post_ids"] = set(liked_posts)  # Convert to a set for efficient lookups
 
     context_dict["posts"] = posts
     context_dict["comments"] = Comment.objects.filter(post__in=posts)
+    context_dict["categories"] = categories
     
     return render(request, 'home.html', context_dict)
 
@@ -117,3 +119,54 @@ def add_comment(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
+def show_categories(request):
+    categories = Category.objects.all()
+    return render(request,'categories.html',{"categories":categories})
+    
+def main_categories(request,category_slug):
+    categories = Category.objects.all()
+    selected_category = get_object_or_404(Category, slug=category_slug)
+    posts = Post.objects.filter(category=selected_category).order_by('-date_created')
+    user = request.user
+    user_profile = UserProfile(user_id = user.id)
+    liked_posts = Like.objects.filter(user =user_profile)
+    liked_post_ids = liked_posts.values_list('post_id', flat=True)
+    
+    return render(request, 'category_detail.html', {
+        'categories': categories,
+        'selected_category': selected_category,
+        'posts': posts,
+        'liked_post_ids':liked_post_ids
+    })
+
+
+def create_post(request):
+    if request.method == 'POST':
+        try:
+            # Validate required fields
+            caption = request.POST.get('caption')
+            category_id = request.POST.get('category')
+            
+            if not caption or not category_id:
+                return JsonResponse({'error': 'Caption and category are required'}, status=400)
+            
+            # Get user profile
+            user_profile = UserProfile.objects.get(user=request.user)
+            
+            # Create post
+            post = Post.objects.create(
+                caption=caption,
+                image=request.FILES.get('image'),  # Optional image
+                category_id=category_id,
+                user=user_profile
+            )
+            
+            return JsonResponse({'success': True, 'post_id': post.id})
+            
+        except UserProfile.DoesNotExist:
+            return JsonResponse({'error': 'User profile not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
