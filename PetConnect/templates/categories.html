@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/category.css' %}">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 sidebar">
+      <h4>Categories</h4>
+      <div class="list-group" style="text-align: left;">
+        {% for category in categories %}
+          <a 
+            href="{% url 'category-detail' category.slug %}" 
+            class="list-group-item list-group-item-action {% if category == selected_category %}active{% endif %}"
+          >
+            {{ category.category_name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+      {% block category_content %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

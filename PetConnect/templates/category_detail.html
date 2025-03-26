@@ -1,0 +1,11 @@
+{% extends 'categories.html' %}
+
+{% load static %}
+
+{% block content %}
+  <h2>{{ selected_category.category_name }}</h2>
+
+  <!-- Include the feed.html template and pass the required context -->
+  {% include 'feed.html' with posts=posts liked_post_ids=liked_post_ids %}
+  
+{% endblock %}
