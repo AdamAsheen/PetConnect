@@ -1,0 +1,32 @@
+{% extends 'pets/base.html' %}
+
+{% load static %}  
+
+{% block title %}Home - PetConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome to PetConnect!</h1>
+    <p>Find and connect with pets and their owners everywhere!</p>
+
+    <h2>Latest Posts</h2>
+    <div class="list-group">
+        {% for post in posts %}
+            <div class="list-group-item">
+                <a href="{% url 'pets:post_detail' post.id %}">
+                    <img src="{{ post.image.url }}" alt="{{ post.caption }}" style="max-width: 100px;">
+                    <p>{{ post.caption }}</p>
+                    <small>Posted by {{ post.user.username }} on {{ post.date_created }}</small>
+                </a>
+                <button class="btn btn-sm btn-outline-primary like-button" data-post-id="{{ post.id }}">Like</button>
+                <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes
+            </div>
+        {% empty %}
+            <p class="text-muted">No posts available at the moment.</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}
