@@ -1,0 +1,22 @@
+.heart-button {
+    background: none;      /* No background */
+    border: none;          /* No border */
+    padding: 0;            /* No padding */
+    cursor: pointer;      /* Cursor pointer on hover */
+    font-size: 50px;       /* Make the icon bigger (adjust as needed) */
+    width: 80px;           /* Set width of button */
+    height: 80px;          /* Set height of button */
+    display: flex;         /* Use flexbox to center the icon */
+    justify-content: center; /* Center horizontally */
+    align-items: center;   /* Center vertically */
+    color: red;            /* Default color */
+}
+
+.heart-button.liked {
+    color: pink;           /* Color when liked */
+}
+
+#post-caption{
+    font-size: x-large;
+}
+
