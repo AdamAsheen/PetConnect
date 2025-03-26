@@ -5,6 +5,7 @@
 {% block title %}Home - PetConnect{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/feed.css' %}">
 <div class="container mt-4">
     <h1>Welcome to PetConnect!</h1>
     <p>Find and connect with pets and their owners everywhere!</p>
@@ -12,15 +13,45 @@
     <h2>Latest Posts</h2>
     <div class="list-group">
         {% for post in posts %}
-            <div class="list-group-item">
-                    <img src="{{ post.image.url }}" alt="{{ post.caption }}" style="max-width: 70%; height:auto;">
+            <div class="list-group-item d-flex" style="padding: 10px 0; margin-bottom: 20px; align-items: flex-start;">
+                
+                <div class="post-content" style="flex: 1; padding-right: 20px;">
+                    <img src="{{ post.image.url }}" alt="{{ post.caption }}" style="max-width: 100%; height:auto;">
                     <p id="post-caption">{{ post.caption }}</p>
-                </a>
-                <button class="heart-button" data-post-id="{{ post.id }}">
-                    <i class="far fa-heart"></i>
-                </button>
-                <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes <br>
-                <small>Posted by {{ post.user.user.username }} on {{ post.date_created }}</small>
+                    <button class="heart-button" data-post-id="{{ post.id }}">
+                        {% if post.id in liked_post_ids %}
+                            <i class="fas fa-heart"></i>  
+                        {% else %}
+                            <i class="far fa-heart"></i>  
+                        {% endif %}
+                    </button>
+                    <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes <br>
+                    <small>Posted by {{ post.user.user.username }} on {{ post.date_created }}</small>
+                </div>
+
+                <div class="comments-div" style="flex: 0 0 300px;">
+                    <h5>Comments:</h5>
+                    <div class="comment-list">
+                        {% if post.comments.count > 0 %}
+                            <div class="comment-list">
+                            {% for comment in post.comments.all %}
+                                <p><strong>{{ comment.user.user.username }}:</strong> {{ comment.comment_text }}</p>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                        <p>Wow, so empty!</p>
+                        {% endif %}
+                    
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Add a comment..." aria-label="Add a comment">
+                        <div class="input-group-append">
+                            <button class="comment-button" type="button" data-post-id="{{ post.id }}"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         {% empty %}
             <p class="text-muted">No posts available at the moment.</p>
@@ -28,6 +59,5 @@
     </div>
 </div>
 
-
-<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/feed.js' %}"></script>
 {% endblock %}

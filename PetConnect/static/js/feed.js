@@ -1,17 +1,60 @@
 let heartButtons = document.querySelectorAll(".heart-button");
+let commentButtons = document.querySelectorAll(".comment-button");
+
+commentButtons.forEach((button) => {
+  button.addEventListener("click",saveComment)
+});
 
 heartButtons.forEach((button) => {
     button.addEventListener("click", function() {
-        // Check the current state of the heart icon to decide which action to take
         if (this.innerHTML == `<i class="fas fa-heart"></i>`) {
-            // If it's already liked (solid heart), decrement the like
             likeDecrement.call(this); 
         } else {
-            // If it's unliked (outline heart), increment the like
             likeIncrement.call(this); 
         }
     });
 });
+
+
+function saveComment() {
+    let commentInput = this.closest('.comments-div').querySelector('.form-control'); 
+    let commentText = commentInput.value;
+    let postId = this.getAttribute("data-post-id");
+    let csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    if (!commentText.trim()) {
+        alert("Please enter a comment!");
+        return; 
+    }
+
+    fetch("/pets/add-comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+            "post-id":postId,
+            "comment-content": commentText,
+        }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            console.log("Comment has been added");
+
+            let commentDiv = this.closest('.comments-div').querySelector('.comment-list');
+            let newComment = document.createElement('p');  
+            newComment.innerHTML = `<strong>${data.username}:</strong> ${data.comment_text}`; 
+            commentDiv.appendChild(newComment);  
+
+            commentInput.value = '';
+        }
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
+}
 
 function likeIncrement() {
   let postId = this.getAttribute("data-post-id");
