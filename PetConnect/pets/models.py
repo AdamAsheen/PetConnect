@@ -8,7 +8,7 @@ class UserProfile(models.Model):
     profile_pic = models.ImageField(upload_to='profile_pics/',blank=True,null=True)
     
     def __str__(self):
-        return self.username
+        return self.user.username
 
 class Category(models.Model):
     category_name = models.CharField(max_length=50, unique=True)
@@ -37,7 +37,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length = 250, null = True, blank = True)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.title)
 
         if Category.objects.filter(slug=self.slug).exists():
             count = 1
@@ -46,19 +46,20 @@ class Post(models.Model):
                 self.slug = f"{original_slug}-{count}"
                 count += 1
 
-        super(Category, self).save(*args, **kwargs)
+        super(Post, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"Post by {self.user.username} on {self.date_created}"
+        return f"Post by {self.user.user.username} on {self.date_created}"
 
 class Comment(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='comments')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     comment_text = models.CharField(max_length=300)
     date_created = models.DateTimeField(auto_now_add=True)
+
     
     def __str__(self):
-        return f"{self.user.username} commented: {self.comment_text[:30]}..."
+        return f"{self.user.user.username} commented: {self.comment_text[:30]}..."
 
 class Like(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='likes')

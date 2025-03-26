@@ -1,0 +1,30 @@
+.heart-button {
+    display: inline-block;
+    background: none;      
+    border: none;          
+    padding: 0;            
+    cursor: pointer;      
+    font-size: 50px;      
+    width: 80px;        
+    height: 80px;   
+    justify-content: center;
+    align-items: center;   
+    color: red;            
+}
+
+.comment-button{
+    display: inline-block;
+    background:local;
+    border:none;
+    font-size: 35px;
+}
+
+
+.heart-button.liked {
+    color: pink;           
+}
+
+#post-caption{
+    font-size: x-large;
+}
+
