@@ -5,10 +5,10 @@
 {% load static %}
 {% block content %}
 <div class="container mt-4">
-    <div class="row gx-5 gy-4">
+    <div class="row gx-3 gy-4">
         
         <!-- LEFT COLUMN -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5>Following</h5>
@@ -30,8 +30,8 @@
         </div>
         
         <!-- MIDDLE COLUMN -->
-        <div class="col-md-6">
-            <div class="d-flex align-items-center mb-4">
+        <div class="col-md-6 col-12">
+            <div class="d-flex flex-wrap align-items-center mb-4">
                 {% if user_profile.profile_pic %}
                     <img src="{{ user_profile.profile_pic.url }}" 
                          class="rounded-circle me-3"
@@ -68,7 +68,7 @@
         </div>
         
         <!-- RIGHT COLUMN -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5>About {{ user_profile.user.username }}</h5>

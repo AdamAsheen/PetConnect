@@ -5,7 +5,7 @@
  <h2>Latest Posts</h2>
     <div class="list-group">
         {% for post in posts %}
-            <div class="list-group-item d-flex" style="padding: 10px 0; margin-bottom: 20px; align-items: flex-start;">
+            <div class="list-group-item d-flex flex-column flex-md-row" style="padding: 10px 0; margin-bottom: 20px; align-items: flex-start;">
                 
                 <div class="post-content" style="flex: 1; padding-right: 20px;">
                     {% if post.image %}
@@ -26,7 +26,7 @@
                     <small>Posted by {{ post.user.user.username }} on {{ post.date_created }}</small></a>
                 </div>
 
-                <div class="comments-div" style="flex: 0 0 300px;">
+                <div class="comments-div mt-3 mt-md-0" style="width: 100%; max-width: 300px;">
                     <h5>Comments:</h5>
                     <div class="comment-list">
                         {% if post.comments.count > 0 %}
