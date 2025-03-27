@@ -5,7 +5,6 @@ class UserProfile(models.Model):
     username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    pet_name = models.CharField(max_length=30)
     profile_pic = models.ImageField(upload_to='profile_pics/', max_length=100, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     bio = models.CharField(max_length=280, blank=True, null=True)
@@ -30,10 +29,20 @@ class Post(models.Model):
     image = models.ImageField(upload_to='post_images/', max_length=200)
     caption = models.CharField(max_length=300, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    liked_by = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+    #liked_by = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     
     def __str__(self):
         return f"Post by {self.user.username} on {self.date_created}"
+    
+class Like(models.Model):
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='likes')
+
+    class Meta:
+        unique_together = ('user', 'post')
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.post}"
 
 class Comment(models.Model):
     user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='comments')
@@ -43,16 +52,6 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"{self.user.username} commented: {self.comment_text[:30]}..."
-
-class Like(models.Model):
-    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='likes')
-    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='likes')
-    
-    class Meta:
-        unique_together = ('user', 'post')
-    
-    def __str__(self):
-        return f"{self.user.username} liked {self.post}"
 
 class Follow(models.Model):
     follower = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='following')
@@ -85,6 +84,7 @@ class FavoriteCategory(models.Model):
         return f"{self.user.username} favorited {self.category.category_name}"
 
 class Pet(models.Model):
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='pets')
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     age = models.IntegerField()
@@ -94,4 +94,4 @@ class Pet(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {{self.breed}}"

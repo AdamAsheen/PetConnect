@@ -63,6 +63,21 @@
                     <p>{{ user_profile.bio|default:"This user hasn't written a bio yet." }}</p>
 
                     <hr>
+                    <h5> Your Pets</h5>
+                    {% for pet in pets %}
+                        <p>
+                            <strong>{{ pet.name }}</strong> ({{ pet.breed }}, {{ pet.age }} years)
+                            <br>
+                            <a href="{% url 'pets:edit_pet' pet.id %}" class="link-primary small">Edit</a> |
+                            <a href="{% url 'pets:delete_pet' pet.id %}" class="link-danger small">Delete</a>
+                        </p>
+                    {% empty %}
+                        <p>You haven't added any pets yet.</p>
+                    {% endfor %}
+
+                    <div class="text-center mt-2">
+                        <a href="{% url 'pets:add_pet' %}" class="btn btn-sm btn-outline-primary">Add New Pet</a>
+                    </div>
 
                     <p><strong>{{ followers }}</strong> Followers | <strong>{{ following }}</strong> Following</p>
                     <p>Joined on {{ user_profile.date_joined|date:"d/m/Y" }}</p>

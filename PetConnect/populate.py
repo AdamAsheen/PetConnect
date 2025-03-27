@@ -1,21 +1,26 @@
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PetConnect.settings')
+
 import django
+django.setup()
+
 import random
 from faker import Faker
-from Pets.models import UserProfile, Category, Post, Comment, Like, Follow, Forum
-
-# Set up Django environment
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PetConnect.settings')
-django.setup()
+from pets.models import UserProfile, Category, Post, Comment, Like, Forum, Pet
 
 fake = Faker()
 
 # Structured dictionary format
 data = {
     "Users": [
-        {"username": "lablover72", "email": "gabbysmith@example.com", "pet_name": "Cooper"},
-        {"username": "petfan123", "email": "stevejobs@example.com", "pet_name": "Layla"},
-        {"username": "catdad4life", "email": "joshzimmerman@example.com", "pet_name": "Chip"},
+        {"username": "lablover72", "email": "gabbysmith@example.com"},
+        {"username": "petfan123", "email": "stevejobs@example.com"},
+        {"username": "catdad4life", "email": "joshzimmerman@example.com"},
+    ],
+    "Pets": [
+    {"name": "Cooper", "breed": "Labrador", "age": 4},
+    {"name": "Layla", "breed": "Scottish Terrier", "age": 5},
+    {"name": "Chip", "breed": "Tabby", "age": 2},
     ],
     "Categories": [
         {"category_name": "Dogs", "category_description": "All about dogs"},
@@ -40,9 +45,14 @@ data = {
 }
 
 
-def add_user(username, email, pet_name):
-    user, created = UserProfile.objects.get_or_create(username=username, email=email, pet_name=pet_name)
+def add_user(username, email):
+    user, created = UserProfile.objects.get_or_create(username=username, email=email)
     return user
+
+
+def add_pet(owner, name, breed, age, description="A great pet"):
+    pet, created = Pet.objects.get_or_create(owner=owner, name=name, breed=breed, age=age, description=description)
+    return pet
 
 
 def add_category(name, description):
@@ -74,7 +84,11 @@ def populate():
     print("Populating database...")
 
     # Create users
-    users = [add_user(u["username"], u["email"], u["pet_name"]) for u in data["Users"]]
+    users = [add_user(u["username"], u["email"]) for u in data["Users"]]
+
+    # Create pets
+    for user, pet in zip(users, data["Pets"]):
+        add_pet(user, pet["name"], pet["breed"], pet["age"])
 
     # Create categories
     categories = [add_category(c["category_name"], c["category_description"]) for c in data["Categories"]]
@@ -100,7 +114,7 @@ def populate():
     # Print out created objects
     print("\nUsers:")
     for user in UserProfile.objects.all():
-        print(f"- {user.username} ({user.pet_name})")
+        print(f"- {user.username}")
 
     print("\nCategories:")
     for category in Category.objects.all():
@@ -118,6 +132,6 @@ def populate():
     for forum in Forum.objects.all():
         print(f"- {forum.question}")
 
-
 if __name__ == "__main__":
     populate()
+

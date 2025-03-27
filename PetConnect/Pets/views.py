@@ -3,11 +3,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Pet
-from .models import Category
-from .models import Post
-from .models import UserProfile
-from .forms import SignUpForm, UserProfileForm
+from .models import Category, Post, UserProfile, Like, Pet
+from .forms import SignUpForm, UserProfileForm, PetForm
 
 
 def home(request):
@@ -27,12 +24,13 @@ def profile(request):
         return redirect('pets:login')
 
     user_profile = UserProfile.objects.get(username=request.user.username)
-
+   
     posts = Post.objects.filter(user=user_profile).order_by('-date_created')
     comments = user_profile.comments.all()
     likes = user_profile.likes.all()
     followers = user_profile.followers.count()
     following = user_profile.following.count()
+    pets = user_profile.pets.all()
 
     return render(request, 'pets/profile.html', {
         'user_profile': user_profile,
@@ -41,6 +39,7 @@ def profile(request):
         'likes': likes,
         'followers': followers,
         'following': following,
+        'pets': pets,
     })
 
 def edit_profile(request):
@@ -94,9 +93,56 @@ def post_detail(request, pk):
     post = Post.objects.get(id=pk)
     return render(request, 'pets/post_detail.html', {'post': post})
 
+def add_pet(request):
+    if not request.user.is_authenticated:
+        return redirect('pets:login')
+
+    user_profile = UserProfile.objects.get(username=request.user.username)
+
+    if request.method == 'POST':
+        form = PetForm(request.POST, request.FILES)
+        if form.is_valid():
+            pet = form.save(commit=False)
+            pet.owner = user_profile
+            pet.save()
+            return redirect('pets:profile')
+    else:
+        form = PetForm()
+
+    return render(request, 'pets/add_pet.html', {'form': form})
+
+def edit_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+
+    if pet.owner.username != request.user.username:
+        return redirect('pets:profile')
+
+    if request.method == 'POST':
+        form = PetForm(request.POST, request.FILES, instance=pet)
+        if form.is_valid():
+            form.save()
+            return redirect('pets:profile')
+    else:
+        form = PetForm(instance=pet)
+
+    return render(request, 'pets/edit_pet.html', {'form': form})
+
+
+def delete_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+
+    if pet.owner.username == request.user.username:
+        pet.delete()
+
+    return redirect('pets:profile')
 
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    post.likes.add(request.user)  
+    try:
+        user_profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'UserProfile not found'}, status=400)
+
+    Like.objects.get_or_create(user=user_profile, post=post)
     return JsonResponse({'likes': post.likes.count()})
