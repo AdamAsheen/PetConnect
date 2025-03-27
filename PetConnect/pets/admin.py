@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-from django.contrib import admin
 from pets.models import *
 
 class CommentInline(admin.TabularInline):
@@ -14,20 +12,20 @@ class LikeInline(admin.TabularInline):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('category_name', 'slug', 'category_description')
     search_fields = ('category_name', 'category_description')
-    prepopulated_fields = {'slug': ('category_name')}
+    prepopulated_fields = {'slug': ('category_name',)}
     readonly_fields = ('slug',)  
     list_per_page = 20
 
 
-
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id','user', 'category', 'caption', 'date_created')
+    list_display = ('id','user', 'category', 'caption', 'slug', 'date_created')
     list_display_links = ('user', 'caption')
     search_fields = ('user__username', 'caption')
     list_filter = ('category', 'date_created')
     inlines = [CommentInline, LikeInline]
     ordering = ('-date_created',)
     list_per_page = 20
+    prepopulated_fields = {'slug': ('caption',)} 
 
     #Check that Post model has a status field for this to work
     actions = ['approve_posts']
@@ -64,6 +62,12 @@ class PetAdmin(admin.ModelAdmin):
     search_fields = ('name', 'breed', 'owner__username')
     list_filter = ('breed',)
 
+class ForumAdmin(admin.ModelAdmin):
+    list_display = ('question', 'slug', 'user')
+    prepopulated_fields = {'slug': ('question',)}
+    search_fields = ('question', 'answer')
+    list_per_page = 20
+
 
 # Register your models here.
 admin.site.register(Category)
@@ -74,6 +78,7 @@ admin.site.register(Follow)
 admin.site.register(ChatRoom, ChatRoomAdmin)
 admin.site.register(Message, MessageAdmin)
 admin.site.register(Pet, PetAdmin)
+admin.site.register(Forum, ForumAdmin)
 
 admin.site.site_header = "PetConnect Admin"
 admin.site.site_title = "PetConnect Admin Portal"
