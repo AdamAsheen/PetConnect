@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - PetConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left Sidebar: Followers/Following -->
+        <div class="col-md-3">
+            <h5>Following</h5>
+            {% for follow in user_profile.following.all|slice:":6" %}
+                <p>{{ follow.username }}</p>
+            {% empty %}
+                <p>No one yet.</p>
+            {% endfor %}
+            <a href="#">See more...</a>
+            <hr>
+            <h5>Followers</h5>
+            {% for follower in user_profile.followers.all|slice:":6" %}
+                <p>{{ follower.username }}</p>
+            {% empty %}
+                <p>No followers yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Center Column: Profile header + Posts -->
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-4">
+                {% if user_profile.profile_pic %}
+                    <img src="{{ user_profile.profile_pic.url }}" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                {% endif %}
+                <h2 class="mb-0">{{ user_profile.username }}</h2>
+            </div>
+
+            <h5 class="mb-3 text-muted">Recent Posts…</h5>
+
+            {% for post in posts %}
+                <div class="card mb-3">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" alt="Post image">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5>{{ post.caption }}</h5>
+                        <p>{{ post.description }}</p>
+                        <small class="text-muted">{{ post.category.name }} {{ post.date_created|date:"d/m/Y" }}</small>
+                        <div class="mt-2">
+                            <span>❤️ {{ post.likes.count }}</span>
+                            <span class="ms-3">💬 {{ post.comments.count }}</span>
+                            <a href="#" class="ms-3 text-danger">Delete Post</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>You haven't posted anything yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Right Sidebar: About + Stats + Edit -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5>About {{ user_profile.username }}</h5>
+                    <p>{{ user_profile.bio|default:"This user hasn't written a bio yet." }}</p>
+
+                    <hr>
+                    <h5> Your Pets</h5>
+                    {% for pet in pets %}
+                        <p>
+                            <strong>{{ pet.name }}</strong> ({{ pet.breed }}, {{ pet.age }} years)
+                            <br>
+                            <a href="{% url 'pets:edit_pet' pet.id %}" class="link-primary small">Edit</a> |
+                            <a href="{% url 'pets:delete_pet' pet.id %}" class="link-danger small">Delete</a>
+                        </p>
+                    {% empty %}
+                        <p>You haven't added any pets yet.</p>
+                    {% endfor %}
+
+                    <div class="text-center mt-2">
+                        <a href="{% url 'pets:add_pet' %}" class="btn btn-sm btn-outline-primary">Add New Pet</a>
+                    </div>
+
+                    <p><strong>{{ followers }}</strong> Followers | <strong>{{ following }}</strong> Following</p>
+                    <p>Joined on {{ user_profile.date_joined|date:"d/m/Y" }}</p>
+                    <p><strong>{{ posts|length }}</strong> Posts</p>
+                    <p><strong>{{ likes|length }}</strong> Likes</p>
+                    <p><strong>{{ comments|length }}</strong> Comments</p>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'pets:edit_profile' %}" class="btn btn-outline-dark">
+                            <i class="fas fa-cog"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

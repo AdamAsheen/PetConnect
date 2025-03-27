@@ -6,6 +6,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='profile')
     pet_name = models.CharField(max_length=30, default='No Pet')
     profile_pic = models.ImageField(upload_to='profile_pics/',blank=True,null=True)
+    bio = models.CharField(max_length=280, blank=True, null=True)
     
     def __str__(self):
         return self.user.username
@@ -119,3 +120,17 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.sender.username}: {self.content[:30]}"
+    
+
+class Pet(models.Model):
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='pets')
+    name = models.CharField(max_length=100)
+    breed = models.CharField(max_length=100)
+    age = models.IntegerField()
+    description = models.TextField()
+    image = models.ImageField(upload_to='pet_images/', blank=True, null=True)
+    likes = models.ManyToManyField('auth.User', related_name='liked_pets', blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} {{self.breed}}"

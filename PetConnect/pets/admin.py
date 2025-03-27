@@ -59,9 +59,13 @@ class MessageAdmin(admin.ModelAdmin):
     list_filter = ('timestamp',)
     readonly_fields = ('timestamp',)
 
+class PetAdmin(admin.ModelAdmin):
+    list_display = ('name', 'breed', 'age', 'owner')
+    search_fields = ('name', 'breed', 'owner__username')
+    list_filter = ('breed',)
+
 
 # Register your models here.
-admin.site.register(UserProfile)
 admin.site.register(Category)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)
@@ -69,6 +73,7 @@ admin.site.register(Like)
 admin.site.register(Follow)
 admin.site.register(ChatRoom, ChatRoomAdmin)
 admin.site.register(Message, MessageAdmin)
+admin.site.register(Pet, PetAdmin)
 
 admin.site.site_header = "PetConnect Admin"
 admin.site.site_title = "PetConnect Admin Portal"

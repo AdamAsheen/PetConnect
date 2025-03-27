@@ -10,7 +10,7 @@
       <div class="list-group" style="text-align: left;">
         {% for category in categories %}
           <a 
-            href="{% url 'category-detail' category.slug %}" 
+            href="{% url 'pets:category-detail' category.slug %}" 
             class="list-group-item list-group-item-action {% if category == selected_category %}active{% endif %}"
           >
             {{ category.category_name }}

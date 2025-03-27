@@ -10,7 +10,7 @@
       <div class="list-group" style="text-align: left;">
         {% if ChatRoom %}
           {% for chat in ChatRoom %}
-            <a href="{% url 'room' chat.chat_name %}" class="list-group-item list-group-item-action">
+            <a href="{% url 'pets:room' chat.chat_name %}" class="list-group-item list-group-item-action">
             {{ chat.chat_name }}
             </a>
           {% endfor %}
