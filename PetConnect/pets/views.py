@@ -319,7 +319,7 @@ def login_view(request):
                 return redirect('pets:home')
     else:
         form = AuthenticationForm()
-    return render(request, 'authentication/login.html', {'form': form})
+    return render(request, 'registration/login.html', {'form': form})
 
 
 def signup(request):
