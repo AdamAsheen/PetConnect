@@ -41,7 +41,6 @@ heartButtons.forEach((button) => {
     });
 });
 
-
 function saveComment() {
     let commentInput = this.closest('.comments-div').querySelector('.form-control'); 
     let commentText = commentInput.value;
@@ -53,6 +52,7 @@ function saveComment() {
         return; 
     }
 
+    // Send the comment to the server to be saved
     fetch("/pets/add-comments", {
         method: "POST",
         headers: {
@@ -60,7 +60,7 @@ function saveComment() {
             "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify({
-            "post-id":postId,
+            "post-id": postId,
             "comment-content": commentText,
         }),
     })
@@ -69,10 +69,11 @@ function saveComment() {
         if (data.success) {
             console.log("Comment has been added");
 
+            window.location.reload();
             let commentDiv = this.closest('.comments-div').querySelector('.comment-list');
             let newComment = document.createElement('p');  
             newComment.innerHTML = `<strong>${data.username}:</strong> ${data.comment_text}`; 
-            commentDiv.appendChild(newComment);  
+            commentDiv.appendChild(newComment);
 
             commentInput.value = '';
         }
@@ -81,6 +82,7 @@ function saveComment() {
         console.error("Error:", error);
     });
 }
+
 
 function likeIncrement() {
   let postId = this.getAttribute("data-post-id");
