@@ -338,12 +338,10 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('pets:profile')
+            return redirect('pets:profile', username=user.username)
     else:
         form = SignUpForm()
-
     return render(request, 'registration/signup.html', {'form': form})
-
 
 @login_required
 def add_pet(request):
