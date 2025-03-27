@@ -11,27 +11,28 @@ from django.contrib.auth.decorators import login_required
 
 
 def general_feed(request):
-    """
-    Public feed for visitors (no login required).
-    """
     posts = Post.objects.all().order_by('-date_created')[:10]
     categories = Category.objects.all()
     comments = Comment.objects.filter(post__in=posts)
+
+    liked_post_ids = set()
+
+    if request.user.is_authenticated:
+        user_profile = UserProfile.objects.get(user=request.user)
+        liked_posts = Like.objects.filter(user=user_profile, post__in=posts)\
+                                  .values_list('post_id', flat=True)
+        liked_post_ids = set(liked_posts)
 
     context_dict = {
         "posts": posts,
         "comments": comments,
         "categories": categories,
-        "liked_post_ids": set(),  
+        "liked_post_ids": liked_post_ids,
     }
     return render(request, 'home.html', context_dict)
 
-
 @login_required
 def following_feed(request):
-    """
-    Private feed for logged-in users (shows posts by followed profiles).
-    """
     user_profile = get_object_or_404(UserProfile, user=request.user)
     followed_profiles = Follow.objects.filter(follower=user_profile).values_list('followed', flat=True)
     posts = Post.objects.filter(user__id__in=followed_profiles).order_by('-date_created')[:10]
@@ -49,10 +50,6 @@ def following_feed(request):
 
 
 def add_likes(request):
-    """
-    (Optionally) add @login_required if you want a login redirect for unauthenticated AJAX requests.
-    Currently uses manual JSON error checks.
-    """
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -266,16 +263,21 @@ def leave_chat(request):
 
 
 @login_required
-def profile(request):
-    user = request.user
+def profile(request,username):
+    user = get_object_or_404(User,username=username)
     user_profile = UserProfile.objects.get(user_id=user.id)
-   
+    own_user = request.user
+    own_user_profile = UserProfile.objects.get(user_id = own_user.id)
+
+    is_own_profile = (user == request.user)
+
     posts = Post.objects.filter(user=user_profile).order_by('-date_created')
     comments = user_profile.comments.all()
     likes = user_profile.likes.all()
     followers = user_profile.followers.count()
     following = user_profile.following.count()
     pets = user_profile.pets.all()
+    is_following = Follow.objects.filter(follower=own_user_profile,followed=user_profile).exists()
 
     return render(request, 'profile.html', {
         'user_profile': user_profile,
@@ -285,6 +287,8 @@ def profile(request):
         'followers': followers,
         'following': following,
         'pets': pets,
+        'is_own_profile':is_own_profile,
+        'is_following':is_following
     })
 
 
@@ -332,9 +336,6 @@ def signup(request):
 
 
 def post_detail(request, pk):
-    """
-    Public post detail view. You may want it open so anyone can see the post.
-    """
     post = get_object_or_404(Post, id=pk)
     return render(request, 'post_detail.html', {'post': post})
 
@@ -379,3 +380,32 @@ def delete_pet(request, pet_id):
     if pet.owner.user_id == request.user.id:
         pet.delete()
     return redirect('pets:profile')
+
+
+@login_required
+def add_follower(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        target_username = data.get("username")
+
+        try:
+            target_user = User.objects.get(username=target_username)
+            target_profile = UserProfile.objects.get(user_id=target_user.id)
+            current_profile = UserProfile.objects.get(user_id=request.user.id)
+
+            if Follow.objects.filter(follower=current_profile, followed=target_profile).exists():
+                Follow.objects.filter(follower=current_profile, followed=target_profile).delete()
+                following = False
+            else:
+                Follow.objects.create(follower=current_profile, followed=target_profile)
+                following = True
+
+            follower_count = Follow.objects.filter(followed=target_profile).count()
+
+            return JsonResponse({
+                "success": True,
+                "following": following,
+                "followers": follower_count,
+            })
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
