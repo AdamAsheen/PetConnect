@@ -11,7 +11,7 @@ urlpatterns = [
     path("following/", views.following_feed, name="following_feed"),  # Private feed (logged-in)
     
     # Authentication/User Profile
-    path("profile/", views.profile, name="profile"),
+    path('profile/<str:username>/', views.profile, name='profile'),
     path("login/", views.login_view, name="login"),
     path("signup/", views.signup, name="signup"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
@@ -25,10 +25,11 @@ urlpatterns = [
     path("post/<int:pk>/", views.post_detail, name="post_detail"),
     path("create-post", views.create_post, name="create-post"),
     
-    # Comments & Likes
+    # Comments & Likes & followers
     path("add-comments", views.add_comment, name="add-comments"),
     path("add-likes", views.add_likes, name="add-likes"),
     path("remove-likes", views.remove_likes, name="remove-likes"),
+    path("follower",views.add_follower, name="follower"),
 
     # Categories
     path("categories", views.show_categories, name="categories"),
@@ -40,4 +41,5 @@ urlpatterns = [
     path("add-user", views.add_user, name="add-user"),
     path("leave-chat", views.leave_chat, name="leave-chat"),
     path("<str:room_name>/", views.chat_room, name="room"),
+
 ]
