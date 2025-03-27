@@ -130,7 +130,7 @@ def add_comment(request):
 
 def show_categories(request):
     categories = Category.objects.all()
-    return render(request, 'categories.html', {"categories": categories})
+    return render(request, 'categories/categories.html', {"categories": categories})
 
 
 def main_categories(request, category_slug):
@@ -145,7 +145,7 @@ def main_categories(request, category_slug):
     else:
         liked_posts = []
 
-    return render(request, 'category_detail.html', {
+    return render(request, 'categories/category_detail.html', {
         'categories': categories,
         'selected_category': selected_category,
         'posts': posts,
@@ -178,6 +178,17 @@ def create_post(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    
+    if post.user.user != request.user:
+        return redirect('pets:profile', username=request.user.username)
+    
+    post.delete()
+
+    return redirect('pets:profile', username=request.user.username)
 
 @login_required
 def chat_index(request):
@@ -279,7 +290,7 @@ def profile(request,username):
     pets = user_profile.pets.all()
     is_following = Follow.objects.filter(follower=own_user_profile,followed=user_profile).exists()
 
-    return render(request, 'profile.html', {
+    return render(request, 'profile/profile.html', {
         'user_profile': user_profile,
         'posts': posts,
         'comments': comments,
@@ -295,17 +306,16 @@ def profile(request,username):
 @login_required
 def edit_profile(request):
     user = request.user
-    user_profile = UserProfile.objects.get(user_id = user.id)
+    user_profile = UserProfile.objects.get(user_id=user.id)
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         if form.is_valid():
             form.save()
-            return redirect('pets:profile')
+            return redirect('pets:profile', username=request.user.username)  # Pass the username here
     else:
         form = UserProfileForm(instance=user_profile)
 
-    return render(request, 'edit_profile.html', {'form': form})
-
+    return render(request, 'profile/edit_profile.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -319,7 +329,7 @@ def login_view(request):
                 return redirect('pets:home')
     else:
         form = AuthenticationForm()
-    return render(request, 'authentication/login.html', {'form': form})
+    return render(request, 'registration/login.html', {'form': form})
 
 
 def signup(request):
@@ -335,11 +345,6 @@ def signup(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 
-def post_detail(request, pk):
-    post = get_object_or_404(Post, id=pk)
-    return render(request, 'post_detail.html', {'post': post})
-
-
 @login_required
 def add_pet(request):
     user = request.user
@@ -350,28 +355,30 @@ def add_pet(request):
             pet = form.save(commit=False)
             pet.owner = user_profile
             pet.save()
-            return redirect('pets:profile')
+            return redirect('pets:profile', username=request.user.username)
     else:
         form = PetForm()
 
-    return render(request, 'pet/add_pet.html', {'form': form})
+    return render(request, 'pet/add_pet.html', {'form': form,"username":request.user.username})
 
 
 @login_required
 def edit_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
-    if pet.owner.username != request.user.username:
-        return redirect('pets:profile')
+    
+    if pet.owner.user.username != request.user.username:
+        return redirect('pets:profile', username=request.user.username)  
 
     if request.method == 'POST':
         form = PetForm(request.POST, request.FILES, instance=pet)
         if form.is_valid():
             form.save()
-            return redirect('pets:profile')
+            return redirect('pets:profile', username=request.user.username) 
     else:
         form = PetForm(instance=pet)
 
-    return render(request, 'pet/edit_pet.html', {'form': form})
+    return render(request, 'pet/edit_pet.html', {'form': form, "username": request.user.username})
+
 
 
 @login_required
@@ -379,7 +386,7 @@ def delete_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     if pet.owner.user_id == request.user.id:
         pet.delete()
-    return redirect('pets:profile')
+    return redirect('pets:profile',username=request.user.username)
 
 
 @login_required
@@ -409,3 +416,12 @@ def add_follower(request):
             })
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
+
+
+def view_pet(request,pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+
+    context = {
+        "pet": pet,
+    }
+    return render(request, "pet/view_pet.html", context)

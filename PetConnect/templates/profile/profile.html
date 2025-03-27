@@ -58,7 +58,7 @@
                         <div class="mt-2">
                             <span>❤️ {{ post.likes.count }}</span>
                             <span class="ms-3">💬 {{ post.comments.count }}</span>
-                            <a href="#" class="ms-3 text-danger">Delete Post</a>
+                            <a href="{% url 'pets:delete-post' post.id %}" class="ms-3 text-danger">Delete Post</a>
                         </div>
                     </div>
                 </div>
@@ -86,9 +86,12 @@
                     {% empty %}
                         <p>You haven't added any pets yet.</p>
                     {% endfor %}
-
                     <div class="text-center mt-2">
-                        <a href="{% url 'pets:add_pet' %}" class="btn btn-sm btn-outline-primary">Add New Pet</a>
+                        {% if pets %}
+                            <a href="{% url 'pets:view-pet' pets.0.id %}" class="btn btn-sm btn-outline-primary">View Your Pet</a>
+                        {% else %}
+                            <a href="{% url 'pets:add_pet' %}" class="btn btn-sm btn-outline-primary">Add New Pet</a>
+                        {% endif %}
                     </div>
                         <p>
                         <strong id="followers-count">{{ followers }}</strong> Followers | 
