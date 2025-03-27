@@ -30,7 +30,7 @@ class Category(models.Model):
 class Post(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length = 250)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts',default=Category.objects.get_or_create(category_name="General")[0])
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     image = models.ImageField(upload_to='post_images/', max_length=200,blank=True,null=True)
     caption = models.CharField(max_length=300, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -100,3 +100,22 @@ class FavoriteCategory(models.Model):
     
     def __str__(self):
         return f"{self.user.username} favorited {self.category.category_name}"
+
+class ChatRoom(models.Model):
+    id = models.AutoField(primary_key=True)
+    users = models.ManyToManyField(User, related_name="chat_rooms")
+    chat_name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.chat_name
+
+
+class Message(models.Model):
+    id = models.AutoField(primary_key=True)
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.content[:30]}"

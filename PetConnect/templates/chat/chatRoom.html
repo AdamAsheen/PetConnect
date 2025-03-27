@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %} 
+
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 sidebar">
+      <h4>Chat</h4>
+      <div class="list-group" style="text-align: left;">
+        {% if ChatRoom %}
+          {% for chat in ChatRoom %}
+            <a href="{% url 'room' chat.chat_name %}" class="list-group-item list-group-item-action">
+            {{ chat.chat_name }}
+            </a>
+          {% endfor %}
+        {% else %}
+      <p>You don't have any chats, would you like to make one?</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-md-9">
+    </div>
+  </div>
+</div>
+
+<div id="chat-log" class="message-container {% if not messages %}empty-chat{% endif %}">
+    {% if messages %}
+        {% for message in messages %}
+                <strong>{{ message.sender.username }}:</strong> {{ message.content }}<br>
+        {% endfor %}
+    {% else %}
+        <div class="empty-placeholder">This is the start of something amazing</div>
+    {% endif %}
+</div>
+
+    <input id="chat-message-input" type="text" size="100"><br>
+    <input id="chat-message-submit" type="button" value="Send">
+    {{ chatroom_json|json_script:"chatroom-data" }}
+    {{ request.user.id|json_script:"user-id" }}
+    {{ request.user.username|json_script:"username"}}
+
+    <div style="text-align: right;">
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createChatModal">
+    Create New Chat
+  </button><br><br>
+
+      <div class="modal fade" id="createChatModal" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createChatModalLabel">Create a New Chat</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="createChatForm">
+           {% csrf_token %}
+            <div class="mb-3">
+              <label for="chatName" class="form-label">Chat Name</label>
+              <input type="text" class="form-control" id="chatName" placeholder="Enter chat name" required>
+            </div>
+            <div class="mb-3">
+              <label for="addUsers" class="form-label">Add Users</label>
+              <input type="text" class="form-control" id="addUsers" placeholder="Enter usernames" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="createChatSubmit">Create Chat</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: right;">
+  <button id="leave-chat" class="btn btn-danger">
+    Leave Chat 
+  </button>
+</div>
+    
+    <!-- Include the external JavaScript file -->
+    <script src="{% static 'js/chat/chat.js' %}"></script>
+    <script src="{% static 'js/chat/createChat.js' %}"></script>
+{% endblock %}

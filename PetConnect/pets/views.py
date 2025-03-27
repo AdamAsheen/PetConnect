@@ -2,7 +2,6 @@ from django.shortcuts import render,get_object_or_404
 from django.http import JsonResponse
 from .models import *
 import json
-import logging
 
 def general_feed(request):
     context_dict = {}
@@ -83,7 +82,6 @@ def remove_likes(request):
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
-logger = logging.getLogger(__name__)
 def add_comment(request):
     if request.method == 'POST':
         try:
@@ -170,3 +168,88 @@ def create_post(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def chat_index(request):
+    chat_rooms = ChatRoom.objects.filter(users=request.user)
+    return render(request, "chat/chatIndex.html", {"ChatRoom": chat_rooms})
+
+def chat_room(request, room_name):
+    chatroom = get_object_or_404(ChatRoom, chat_name=room_name)
+
+    chatroom_data = {
+        "id":chatroom.id,
+        "chat_name":chatroom.chat_name,
+        "users":list(chatroom.users.values("id","username")),
+    }
+
+    messages = Message.objects.filter(chat_room_id=chatroom.id)
+    chat_rooms = ChatRoom.objects.filter(users=request.user)
+
+    return render(request, "chat/chatRoom.html", {"chatroom_json": chatroom_data, "messages": messages,"ChatRoom":chat_rooms})
+
+
+
+def create_chat(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success":False,"error":"Not authenticated"},status = 403)
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        room_name = data.get("chat_name")
+
+        chat, created = ChatRoom.objects.get_or_create(chat_name=room_name)
+        chat.users.add(request.user)  # Add user every time
+
+        print("test")
+
+        return JsonResponse({
+            "success": True,
+            "chat_name": room_name,
+            "newly_created": created,
+        })
+    return JsonResponse({"success": False}, status=405)
+
+def add_user(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "Not authenticated"}, status=403)
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        chat_name = data.get("chat_name")
+        username = data.get("username")  # Single username
+
+        try:
+            chat = ChatRoom.objects.get(chat_name=chat_name)
+        except ChatRoom.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Chat room does not exist"}, status=400)
+
+        try:
+            user = User.objects.get(username=username.strip())
+            chat.users.add(user)
+        except User.DoesNotExist:
+            return JsonResponse({"success": False, "error": f"User {username} does not exist"}, status=400)
+
+        return JsonResponse({"success": True, "message": f"User {username} added to {chat_name}"})
+    
+    return JsonResponse({"success": False}, status=405)
+
+
+def leave_chat(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        chat_name = data.get("chat_name")
+        
+        user_object = request.user
+
+        try:
+            chat_room = ChatRoom.objects.get(chat_name=chat_name)
+        except ChatRoom.DoesNotExist:
+            return JsonResponse({"error": "Chat room not found"}, status=404)
+
+
+        chat_room.users.remove(user_object)
+        
+
+        return JsonResponse({"success": True})
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)

@@ -49,6 +49,17 @@ class FollowAdmin(admin.ModelAdmin):
     list_display = ('follower', 'followed')
     search_fields = ('follower__username', 'followed__username')
 
+class ChatRoomAdmin(admin.ModelAdmin):
+    list_display = ('chat_name',)
+    search_fields = ('chat_name',)
+
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('chat_room', 'sender', 'content', 'timestamp')
+    search_fields = ('chat_room__chat_name', 'sender__username', 'content')
+    list_filter = ('timestamp',)
+    readonly_fields = ('timestamp',)
+
+
 # Register your models here.
 admin.site.register(UserProfile)
 admin.site.register(Category)
@@ -56,6 +67,8 @@ admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Like)
 admin.site.register(Follow)
+admin.site.register(ChatRoom, ChatRoomAdmin)
+admin.site.register(Message, MessageAdmin)
 
 admin.site.site_header = "PetConnect Admin"
 admin.site.site_title = "PetConnect Admin Portal"
