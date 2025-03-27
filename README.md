@@ -1,9 +1,3 @@
 # PetConnect
 
-## Getting Started
-To ensure compatibility with the project a virtual enviroment with the neccessary packages is required. Creation of a virtual enviroment is outlined in the steps below:
-- ``` conda create -n pets python=3.11```
-- ``` conda activate pets```
-- ```pip install django==3.2.9```
-- ```pip install pillow```
-- ```pip install daphne```
+PetConnect is a website connecting animal lovers, pet lovers and everything in between to a place solely for animals. Giving you the ability to follow users, sort by categories and even chat with like minded people! Below is an example of what we have in store
