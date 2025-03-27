@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% load static %}  
+
+{% block title %}Home - PetConnect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/feed.css' %}">
+<div class="container mt-4">
+{% include 'feed.html' %}
+{% endblock %}

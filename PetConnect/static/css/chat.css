@@ -1,0 +1,95 @@
+/* Sidebar styling */
+.sidebar {
+    height: calc(100vh - 60px); 
+    position: fixed; 
+    top: 60px; 
+    left: 0; 
+    width: 250px; 
+    background-color: #f8f9fa; 
+    overflow-y: auto; 
+    padding-top: 20px; 
+}
+
+.sidebar .list-group-item {
+    padding-left: 15px;
+}
+
+.sidebar .list-group-item.active {
+    background-color: #007bff; 
+    border-color: #007bff;
+}
+
+.col-md-9 {
+    margin-left: 250px; 
+    padding-top: 20px; 
+}
+
+#create-chat {
+    size: 1000px;
+}
+
+/* Chat Message Container */
+.message-container {
+    width: 100%;
+    height: 400px;
+    padding: 0;        /* Remove extra padding */
+    margin: 0;         /* Remove margin */
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    gap: 2px;
+}
+
+/* Remove extra space around each message */
+.message {
+    margin: 0;         /* Remove margin */
+    padding: 0;        /* Remove padding */
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* Styling for message sender's name */
+.message strong {
+    color: #2c3e50;
+    font-weight: 600;
+    margin: 0;          /* Remove margin around the name */
+    padding: 0;         /* Remove padding */
+    line-height: 1.5;   /* Adjust line height */
+}
+
+/* Empty chat placeholder styling */
+.empty-chat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-placeholder {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Message input styling */
+#chat-message-input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Ensure the empty placeholder is hidden when messages are present */
+.message-container:not(.empty-chat) .empty-placeholder {
+    display: none;
+}
+
+/* Hide messages when the chat is empty */
+.empty-chat .message {
+    display: none;
+}
