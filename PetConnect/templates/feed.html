@@ -23,7 +23,7 @@
                         {% endif %}
                     </button>
                     <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes <br>
-                    <small>Posted by {{ post.user.user.username }} on {{ post.date_created }}</small></a>
+                    <a href="{% url 'pets:profile' post.user.user.username %}"><small>Posted by {{ post.user.user.username }} on {{ post.date_created }}</small></a>
                 </div>
 
                 <div class="comments-div mt-3 mt-md-0" style="width: 100%; max-width: 300px;">
@@ -32,7 +32,7 @@
                         {% if post.comments.count > 0 %}
                             <div class="comment-list">
                             {% for comment in post.comments.all %}
-                                <p><strong>{{ comment.user.user.username }}:</strong> {{ comment.comment_text }}</p>
+                                <a href="{% url 'pets:profile' comment.user.user.username %}" class="link-dark"><p><strong>{{ comment.user.user.username }}:</strong></a> {{ comment.comment_text }}</p>
                             {% endfor %}
                             </div>
                         {% endif %}
