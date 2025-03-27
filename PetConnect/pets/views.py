@@ -48,7 +48,7 @@ def following_feed(request):
     }
     return render(request, 'home.html', context_dict)
 
-
+@login_required
 def add_likes(request):
     if request.method == "POST":
         try:
@@ -71,7 +71,7 @@ def add_likes(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-
+@login_required
 def remove_likes(request):
     if request.method == "POST":
         try:
