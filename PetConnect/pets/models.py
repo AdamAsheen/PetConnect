@@ -70,7 +70,7 @@ class Like(models.Model):
         unique_together = ('user', 'post')
     
     def __str__(self):
-        return f"{self.user.username} liked {self.post}"
+        return f"{self.user.user.username} liked {self.post}"
 
 class Follow(models.Model):
     follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
@@ -80,17 +80,30 @@ class Follow(models.Model):
         unique_together = ('follower', 'followed')
     
     def __str__(self):
-        return f"{self.follower.username} follows {self.followed.username}"
+        return f"{self.follower.user.username} follows {self.followed.user.username}"
 
-class Help(models.Model):
+class Forum(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='help_questions')
     date_created = models.DateTimeField(auto_now_add=True)
     question = models.CharField(max_length=500)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
     answer = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='help_images/', max_length=200, blank=True, null=True)
     
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.question[:50])
+            slug = base_slug
+            count = 1
+            while Forum.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Help by {self.user.username}: {self.question[:50]}..."
+        return f"Forum by {self.user.user.username}: {self.question[:50]}..."
+
 
 class FavoriteCategory(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='favorite_categories')
