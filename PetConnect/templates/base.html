@@ -33,16 +33,24 @@
                     <li class="nav-item">
                         {% if user.is_authenticated %} <a class="nav-link" href="{% url 'pets:profile' request.user.username %}">Profile</a> {% else %}  <a class="nav-link" href="{% url 'pets:login' %}">Profile</a>  {% endif %}
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'pets:chat' %}">Chat</a>
                     </li>
                     {% if not user.is_authenticated %}<li class="nav-item"><a href="{% url 'pets:login' %}" class="nav-link">Login</a></li> {% endif %}
+                    <li class="nav-item">
+                        {% if user.is_authenticated %} 
+                        <a class="nav-link" href="{% url 'logout' %}" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a> 
+                        {% else %}
+                        <a class="nav-link" href="{% url 'pets:signup' %}">Sign Up</a>
+                        {% endif %}
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Modal Structure for Create Post -->
+    {% if user.is_authenticated %}
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -85,6 +93,28 @@
             </div>
         </div>
     </div>
+    {% endif %}
+
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to log out?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
     <div class="container mt-4">
         {% block content %}

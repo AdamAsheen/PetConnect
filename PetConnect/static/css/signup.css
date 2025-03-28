@@ -1,0 +1,15 @@
+.auth-form input.form-control {
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.auth-form input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.form-floating label {
+    padding: 0.5rem 1rem;
+    color: #6c757d;
+}

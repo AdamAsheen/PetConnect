@@ -11,7 +11,8 @@
 }
 
 .sidebar .list-group-item {
-  padding-left: 15px;
+      box-sizing: border-box; 
+      padding: 20px 15px
 }
 
 .sidebar .list-group-item.active {
@@ -22,4 +23,9 @@
 .col-md-9 {
   margin-left: 250px; 
   padding-top: 20px; 
+}
+
+.col-md-9 {
+    margin-left: 250px;
+    width: calc(100% - 250px);
 }

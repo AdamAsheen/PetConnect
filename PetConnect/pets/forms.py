@@ -27,18 +27,41 @@ class UserProfileForm(forms.ModelForm):
         }
 
 
+
 class SignUpForm(UserCreationForm):
-    """
-    For creating a new User (the Django auth User model).
-    This form includes email, username, password1, and password2.
-    """
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'you@example.com'
+        })
+    )
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Remove help texts
+        for field in self.fields.values():
+            field.help_text = None
 
-
+        # Uniform styling for all fields
+        self.fields['username'].widget.attrs.update({
+            'placeholder': 'e.g., petlover123',
+            'class': 'form-control'
+        })
+        self.fields['password1'].widget.attrs.update({
+            'placeholder': 'At least 8 characters',
+            'class': 'form-control'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'placeholder': 'Repeat your password',
+            'class': 'form-control'
+        })
+        
 class PetForm(forms.ModelForm):
     """
     For creating or editing Pet objects, which belong to a UserProfile.

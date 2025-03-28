@@ -193,12 +193,14 @@ def delete_post(request, post_id):
 @login_required
 def chat_index(request):
     chat_rooms = ChatRoom.objects.filter(users=request.user)
-    return render(request, "chat/chatIndex.html", {"ChatRoom": chat_rooms})
+    categories = Category.objects.all()
+    return render(request, "chat/chatIndex.html", {"ChatRoom": chat_rooms,'categories':categories})
 
 
 @login_required
 def chat_room(request, room_name):
     chatroom = get_object_or_404(ChatRoom, chat_name=room_name)
+    categories = Category.objects.all()
     chatroom_data = {
         "id": chatroom.id,
         "chat_name": chatroom.chat_name,
@@ -212,7 +214,8 @@ def chat_room(request, room_name):
         {
             "chatroom_json": chatroom_data,
             "messages": messages,
-            "ChatRoom": chat_rooms
+            "ChatRoom": chat_rooms,
+            "categories":categories,
         }
     )
 
@@ -272,36 +275,33 @@ def leave_chat(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-
 @login_required
-def profile(request,username):
-    user = get_object_or_404(User,username=username)
-    user_profile = UserProfile.objects.get(user_id=user.id)
-    own_user = request.user
-    own_user_profile = UserProfile.objects.get(user_id = own_user.id)
-
+def profile(request, username):
+    user = get_object_or_404(User, username=username)
+    user_profile = UserProfile.objects.get(user=user)
+    own_user_profile = UserProfile.objects.get(user=request.user)
+    
     is_own_profile = (user == request.user)
-
-    posts = Post.objects.filter(user=user_profile).order_by('-date_created')
-    comments = user_profile.comments.all()
-    likes = user_profile.likes.all()
-    followers = user_profile.followers.count()
-    following = user_profile.following.count()
-    pets = user_profile.pets.all()
-    is_following = Follow.objects.filter(follower=own_user_profile,followed=user_profile).exists()
-
-    return render(request, 'profile/profile.html', {
+    
+    # Follow relationships
+    is_following = Follow.objects.filter(
+        follower=own_user_profile,
+        followed=user_profile
+    ).exists()
+    
+    following = user_profile.following.all() 
+    followers = user_profile.followers.all()  
+    
+    context = {
         'user_profile': user_profile,
-        'posts': posts,
-        'comments': comments,
-        'likes': likes,
-        'followers': followers,
-        'following': following,
-        'pets': pets,
-        'is_own_profile':is_own_profile,
-        'is_following':is_following
-    })
-
+        'posts': Post.objects.filter(user=user_profile).order_by('-date_created'),
+        'followers_count': followers.count(),
+        'following_count': following.count(),
+        'is_own_profile': is_own_profile,
+        'is_following': is_following,
+        # Add other context variables...
+    }
+    return render(request, 'profile/profile.html', context)
 
 @login_required
 def edit_profile(request):

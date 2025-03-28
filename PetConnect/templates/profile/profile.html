@@ -7,21 +7,21 @@
 <div class="container mt-4">
     <div class="row gx-3 gy-4">
         
-        <!-- LEFT COLUMN -->
         <div class="col-md-3 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5>Following</h5>
                     {% for follow in user_profile.following.all|slice:":6" %}
-                        <p>{{ follow.user.username }}</p>
+                        {# Corrected: access followed user #}
+                        <p>{{ follow.followed.user.username }}</p>
                     {% empty %}
                         <p>No one yet.</p>
                     {% endfor %}
-                    <a href="#">See more...</a>
-                    <hr>
+                    
                     <h5>Followers</h5>
                     {% for follower in user_profile.followers.all|slice:":6" %}
-                        <p>{{ follower.user.username }}</p>
+                        {# Corrected: access follower user #}
+                        <p>{{ follower.follower.user.username }}</p>
                     {% empty %}
                         <p>No followers yet.</p>
                     {% endfor %}
@@ -94,8 +94,8 @@
                         {% endif %}
                     </div>
                         <p>
-                        <strong id="followers-count">{{ followers }}</strong> Followers | 
-                        <strong id="following-count">{{ following }}</strong> Following
+                        <strong id="followers-count">{{ followers_count }}</strong> {% if followers_count == 1 %}Follower {% else %} Followers {% endif %}| 
+                        <strong id="following-count">{{ following_count }}</strong> Following
                       </p>
                     <p>Joined on {{ user_profile.date_joined|date:"d/m/Y" }}</p>
                     <p><strong>{{ posts|length }}</strong> Posts</p>

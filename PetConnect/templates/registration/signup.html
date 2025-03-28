@@ -2,12 +2,36 @@
 {% block title %}Sign Up - PetConnect{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 500px;">
-    <h2 class="mb-4 text-center">Create Your Account</h2>
-    <form method="post">
+<div class="container mt-5" style="max-width: 400px;">
+    <h2 class="mb-4 text-center">Join PetConnect</h2>
+    <form method="post" class="auth-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success w-100">Sign Up</button>
+        
+        <!-- Username -->
+        <div class="form-floating mb-3">
+            {{ form.username }}
+            <label for="{{ form.username.id_for_label }}">Username</label>
+        </div>
+
+        <!-- Email -->
+        <div class="form-floating mb-3">
+            {{ form.email }}
+            <label for="{{ form.email.id_for_label }}">Email</label>
+        </div>
+
+        <!-- Password -->
+        <div class="form-floating mb-3">
+            {{ form.password1 }}
+            <label for="{{ form.password1.id_for_label }}">Password</label>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-floating mb-4">
+            {{ form.password2 }}
+            <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">Create Account</button>
     </form>
 </div>
 {% endblock %}
