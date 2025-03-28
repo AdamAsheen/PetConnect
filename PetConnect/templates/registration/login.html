@@ -3,14 +3,16 @@
 {% block title %}Login - PetConnect{% endblock %}
 
 {% block content %}
+<div class="mt-4 text-center">
 <h1>Login</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Login</button>
+    <button type="submit" class="btn btn-primary">Login</button>
 </form>
+</div>
 <div class="mt-4 text-center">
     <p>Not a member?</p>
-    <a href="{% url 'pets:signup' %}" class="btn btn-secondary">Sign Up</a>
+    <a href="{% url 'pets:signup' %}" class="btn btn-primary">Sign Up</a>
 </div>
 {% endblock %}
