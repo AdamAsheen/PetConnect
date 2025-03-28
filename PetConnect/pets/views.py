@@ -295,6 +295,7 @@ def profile(request, username):
     context = {
         'user_profile': user_profile,
         'posts': Post.objects.filter(user=user_profile).order_by('-date_created'),
+        'pets': Pet.objects.filter(owner=user_profile),
         'followers_count': followers.count(),
         'following_count': following.count(),
         'is_own_profile': is_own_profile,
