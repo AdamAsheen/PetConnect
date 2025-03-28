@@ -5,9 +5,10 @@
 <link rel="stylesheet" href="{% static 'css/category.css' %}">
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-3 sidebar">
+    <!-- Desktop Sidebar -->
+    <div class="col-md-3 sidebar d-none d-md-block">
       <h4>Categories</h4>
-      <div class="list-group" style="text-align: left;">
+      <div class="list-group">
         {% for category in categories %}
           <a 
             href="{% url 'pets:category-detail' category.slug %}" 
@@ -18,10 +19,33 @@
         {% endfor %}
       </div>
     </div>
+
+    <!-- Mobile Collapsible Menu -->
+    <div class="d-md-none">
+      <button class="btn btn-primary w-100 rounded-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileCategories">
+        Browse Categories
+      </button>
+      <div class="collapse" id="mobileCategories">
+        <div class="list-group">
+          {% for category in categories %}
+            <a 
+              href="{% url 'pets:category-detail' category.slug %}" 
+              class="list-group-item list-group-item-action {% if category == selected_category %}active{% endif %}"
+            >
+              {{ category.category_name }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
     <!-- Main Content -->
     <div class="col-md-9 col-12">
       {% block category_content %}
-      <h3>Please select a category</h3>
+      <div class="text-center mt-5">
+        <h3>Please select a category</h3>
+        <p class="text-muted">Choose from the sidebar to view posts</p>
+      </div>
       {% endblock %}
     </div>
   </div>

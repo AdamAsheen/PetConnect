@@ -2,32 +2,7 @@
 
 {% load static %}
 
-{% block content %}
-  <h2>{{ selected_category.category_name }}</h2>
-  <link rel="stylesheet" href="{% static 'css/category.css' %}">
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-3 sidebar">
-      <h4>Categories</h4>
-      <div class="list-group" style="text-align: left;">
-        {% for category in categories %}
-          <a 
-            href="{% url 'pets:category-detail' category.slug %}" 
-            class="list-group-item list-group-item-action {% if category == selected_category %}active{% endif %}"
-          >
-            {{ category.category_name }}
-          </a>
-        {% endfor %}
-      </div>
-    </div>
-    <!-- Main Content -->
-    <div class="col-md-9 col-12">
-      {% block category_content %}
-      {% endblock %}
-    </div>
-  </div>
-</div>
-
+{% block category_content %}
+  <h2 class="mb-4">{{ selected_category.category_name }}</h2>
   {% include 'feed.html' with posts=posts liked_post_ids=liked_post_ids %}
-  
 {% endblock %}
